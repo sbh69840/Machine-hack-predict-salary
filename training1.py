@@ -25,24 +25,27 @@ sal_unique = train["salary"].unique()
 sal_to_index = {val:ind for ind,val in enumerate(sal_unique)}
 ind_to_sal = {ind:val for ind,val in enumerate(sal_unique)}
 
+exp_unique = train["experience"].unique()
+exp_to_index = {val:ind for ind,val in enumerate(exp_unique)}
+ind_to_exp = {ind:val for ind,val in enumerate(exp_unique)}
+
+
 # loc_unique = train["salary"].unique()
 # loc_to_index = {val:ind for ind,val in enumerate(loc_unique)}
 # ind_to_loc = {ind:val for ind,val in enumerate(loc_unique)}
 
 train["salary"] = train["salary"].map(sal_to_index)
+train["experience"] = train["experience"].map(exp_to_index)
+test["experience"] = test["experience"].map(exp_to_index)
+
 # train["location"] = train["location"].map(loc_to_index)
 # test["location"] = test["location"].map(loc_to_index)
 # print(test["location"].isnull)
-X = train[["min_exp","max_exp"]].values 
-from sklearn.preprocessing import StandardScaler 
-scaler = StandardScaler()
-
-
+X = train[["min_exp","max_exp","experience"]].values 
 y = train["salary"].values 
-X = scaler.fit_transform(X,y)
 y = to_categorical(y,6)
 X_train,X_val,y_train,y_val = train_test_split(X,y,stratify=y,test_size=0.1)
-X_test = test[["min_exp","max_exp"]].values
+X_test = test[["min_exp","max_exp","experience"]].values
 print(X_test.shape)
 
 # X_train = np.expand_dims(X_train,axis=-1)
@@ -62,7 +65,7 @@ path = "model_3_layer_com.h5"
 check = ModelCheckpoint(path,monitor="val_acc",verbose=1,save_best_only=True\
 ,mode="max")
 model = Sequential()
-model.add(Dense(32,activation="relu",input_dim=2))
+model.add(Dense(32,activation="relu",input_dim=X_train.shape[1]))
 model.add(Dense(16,activation="relu"))
 model.add(Dense(6,activation="softmax"))
 model.compile(optimizer="adam",loss="categorical_crossentropy",metrics=["accuracy"])
