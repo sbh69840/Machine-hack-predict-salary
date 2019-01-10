@@ -34,7 +34,12 @@ train["salary"] = train["salary"].map(sal_to_index)
 # test["location"] = test["location"].map(loc_to_index)
 # print(test["location"].isnull)
 X = train[["min_exp","max_exp"]].values 
+from sklearn.preprocessing import StandardScaler 
+scaler = StandardScaler()
+
+
 y = train["salary"].values 
+X = scaler.fit_transform(X,y)
 y = to_categorical(y,6)
 X_train,X_val,y_train,y_val = train_test_split(X,y,stratify=y,test_size=0.1)
 X_test = test[["min_exp","max_exp"]].values
@@ -60,21 +65,21 @@ model = Sequential()
 model.add(Dense(32,activation="relu",input_dim=2))
 model.add(Dense(16,activation="relu"))
 model.add(Dense(6,activation="softmax"))
-# model.compile(optimizer="sgd",loss="categorical_crossentropy",metrics=["accuracy"])
-# model.fit(X_train,y_train,batch_size=100,epochs=100,validation_data=(X_val,\
-# y_val),verbose=0,callbacks=[check])
+model.compile(optimizer="adam",loss="categorical_crossentropy",metrics=["accuracy"])
+model.fit(X_train,y_train,batch_size=100,epochs=100,validation_data=(X_val,\
+y_val),verbose=0,callbacks=[check])
 
-from keras.models import load_model 
-model = load_model("model_3_layer_com.h5")
-result = model.predict(X_test)
-new_res = []
-for a in result:
-    new_res.append(sal_unique[a.tolist().index(max(a))])
-test["salary"] = new_res 
-test = test.drop(["min_exp","max_exp","experience","company_name_encoded\
-"],axis=1)
-test.to_csv("Submit.csv",index=False)
-new_tes = pandas.read_csv("Submit.csv")
-writer = pandas.ExcelWriter('submit1.xlsx')
-new_tes.to_excel(writer,"Sheet1",index=False)
-writer.save()
+# from keras.models import load_model 
+# model = load_model("model_3_layer_com.h5")
+# result = model.predict(X_test)
+# new_res = []
+# for a in result:
+#     new_res.append(sal_unique[a.tolist().index(max(a))])
+# test["salary"] = new_res 
+# test = test.drop(["min_exp","max_exp","experience","company_name_encoded\
+# "],axis=1)
+# test.to_csv("Submit.csv",index=False)
+# new_tes = pandas.read_csv("Submit.csv")
+# writer = pandas.ExcelWriter('submit1.xlsx')
+# new_tes.to_excel(writer,"Sheet1",index=False)
+# writer.save()
