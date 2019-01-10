@@ -24,8 +24,9 @@ test = test.drop(["job_description","job_desig",\
 sal_unique = train["salary"].unique()
 sal_to_index = {val:ind for ind,val in enumerate(sal_unique)}
 ind_to_sal = {ind:val for ind,val in enumerate(sal_unique)}
+
 train["salary"] = train["salary"].map(sal_to_index)
-X = train[["min_exp","max_exp","company_name_encoded"]].values 
+X = train[["min_exp","max_exp"]].values 
 y = train["salary"].values 
 y = to_categorical(y,6)
 X_train,X_val,y_train,y_val = train_test_split(X,y,stratify=y,test_size=0.1)
